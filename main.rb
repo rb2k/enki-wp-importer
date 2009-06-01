@@ -4,20 +4,21 @@ require "sequel"
 puts "Starting Import"
 DB_WP = Sequel.connect('mysql://user:pass@localhost/database_name')
 DB_ENKI = Sequel.connect('sqlite:///path/to/db/file.sqlite3')
+WP_PREFIX = "wp_123abc"
 
 #preparing post import
 ENKI_POSTS = DB_ENKI[:posts]
-WP_POSTS = DB_WP.from(:wp_258ybh_posts).where(:post_type => "post", :post_status => "publish").order(:ID)
+WP_POSTS = DB_WP.from(:"#{WP_PREFIX}_posts").where(:post_type => "post", :post_status => "publish").order(:ID)
 WP_POST_AMOUNT = WP_POSTS.count
 
 #preparing pages import
 ENKI_PAGES = DB_ENKI[:pages]
-WP_PAGES = DB_WP.from(:wp_258ybh_posts).where(:post_type => "page", :post_status => "publish").order(:ID)
+WP_PAGES = DB_WP.from(:"#{WP_PREFIX}_posts").where(:post_type => "page", :post_status => "publish").order(:ID)
 WP_PAGES_AMOUNT = WP_PAGES.count
 
 #preparing comment import
 ENKI_COMMENTS = DB_ENKI[:comments]
-WP_COMMENTS = DB_WP.from(:wp_258ybh_comments).where(:comment_approved => 1)
+WP_COMMENTS = DB_WP.from(:"#{WP_PREFIX}_comments").where(:comment_approved => 1)
 WP_COMMENTS_AMOUNT = WP_PAGES.count
 
 #Transfering the posts + related comments
