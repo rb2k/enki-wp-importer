@@ -6,6 +6,7 @@ DB_WP = Sequel.connect('mysql://user:pass@localhost/database_name')
 DB_ENKI = Sequel.connect('sqlite:///path/to/db/file.sqlite3')
 WP_PREFIX = "wp_123abc"
 
+
 #preparing post import
 ENKI_POSTS = DB_ENKI[:posts]
 WP_POSTS = DB_WP.from(:"#{WP_PREFIX}_posts").where(:post_type => "post", :post_status => "publish").order(:ID)
@@ -61,6 +62,26 @@ WP_POSTS.all.each_with_index do |row,index|
         comment_counter+=1
       end
 print " \n"
+
+
+print "Tags: "
+DB_WP.fetch("SELECT name, id FROM #{WP_PREFIX}_terms t, #{WP_PREFIX}_posts p, #{WP_PREFIX}_term_relationships r, #{WP_PREFIX}_term_taxonomy tt WHERE p.post_status='publish' AND tt.taxonomy = 'post_tag' AND p.id=r.object_id AND r.term_taxonomy_id=tt.term_taxonomy_id AND tt.term_id = t.term_id AND p.id=#{post_original_ID}") do |tag_row|
+
+        print tag_row[:name]
+
+        #check if there's already a tag with that name
+        if (DB_ENKI[:tags].filter(:name => tag_row[:name]).count==0)
+                print "[NEW]"
+                DB_ENKI[:tags].insert(:name => tag_row[:name])
+        end
+        #inserting the newly found tag into the taggings table
+        my_tag_id = DB_ENKI[:tags].filter(:name => tag_row[:name]).first[:id]
+        DB_ENKI[:taggings].insert(:tag_id => my_tag_id, :taggable_id => index)
+        print " | "
+end
+print "\n"
+
+
 end
 
 puts "Transfering pages"
@@ -79,3 +100,4 @@ WP_PAGES.all.each_with_index do |row, index|
 
 
 end
+
