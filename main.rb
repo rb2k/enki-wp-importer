@@ -65,7 +65,7 @@ print " \n"
 
 
 print "Tags: "
-DB_WP.fetch("SELECT name, id FROM #{WP_PREFIX}_terms t, #{WP_PREFIX}_posts p, #{WP_PREFIX}_term_relationships r, #{WP_PREFIX}_term_taxonomy tt WHERE p.post_status='publish' AND tt.taxonomy = 'post_tag' AND p.id=r.object_id AND r.term_taxonomy_id=tt.term_taxonomy_id AND tt.term_id = t.term_id AND p.id=#{post_original_ID}") do |tag_row|
+DB_WP.fetch("SELECT name, id FROM #{WP_PREFIX}_terms t, #{WP_PREFIX}_posts p, #{WP_PREFIX}_term_relationships r, #{WP_PREFIX}_term_taxonomy tt WHERE p.post_status='publish' AND (tt.taxonomy = 'post_tag' OR tt.taxonomy = 'category') AND p.id=r.object_id AND r.term_taxonomy_id=tt.term_taxonomy_id AND tt.term_id = t.term_id AND p.id=#{post_original_ID}") do |tag_row|
 
         print tag_row[:name]
 
