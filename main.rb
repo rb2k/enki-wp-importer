@@ -72,12 +72,17 @@ DB_WP.fetch("SELECT name, id FROM #{WP_PREFIX}_terms t, #{WP_PREFIX}_posts p, #{
         #check if there's already a tag with that name
         if (DB_ENKI[:tags].filter(:name => tag_row[:name]).count==0)
                 print "[NEW]"
-                DB_ENKI[:tags].insert(:name => tag_row[:name])
+                DB_ENKI[:tags].insert(:name => tag_row[:name], :taggings_count=>1)
         end
         #inserting the newly found tag into the taggings table
         my_tag_id = DB_ENKI[:tags].filter(:name => tag_row[:name]).first[:id]
-        DB_ENKI[:taggings].insert(:tag_id => my_tag_id, :taggable_id => index)
-        print " | "
+		current_count = DB_ENKI[:tags].filter(:name => tag_row[:name]).first[:taggings_count]
+		new_count = current_count.to_i + 1
+		#updating count
+		DB_ENKI[:tags].filter(:name => tag_row[:name]).update(:taggings_count => new_count)
+		
+		DB_ENKI[:taggings].insert(:tag_id => my_tag_id, :taggable_id => index)
+        print " (#{new_count}) | "
 end
 print "\n"
 
