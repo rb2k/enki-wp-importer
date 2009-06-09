@@ -2,8 +2,8 @@ require "rubygems"
 require "sequel"
 
 puts "Starting Import"
-DB_WP = Sequel.connect('mysql://user:pass@localhost/database_name')
-DB_ENKI = Sequel.connect('sqlite:///path/to/db/file.sqlite3')
+DB_WP = Sequel.connect('mysql://user:pass@localhost/wp_database_name')
+DB_ENKI = Sequel.connect('mysql://user:pass@localhost/enki_database_name')
 WP_PREFIX = "wp_123abc"
 
 
@@ -25,9 +25,9 @@ WP_COMMENTS_AMOUNT = WP_PAGES.count
 #Transfering the posts + related comments
 puts "Transfering posts and comments"
 
-comment_counter = 0
+comment_counter = 1
 WP_POSTS.all.each_with_index do |row,index|
-    post_ID = index
+    post_ID = index + 1
     post_original_ID = row[:ID]
     post_date = row[:post_date]
     post_title = row[:post_title].to_s
@@ -91,7 +91,7 @@ end
 
 puts "Transfering pages"
 WP_PAGES.all.each_with_index do |row, index|
-        page_ID = index
+        page_ID = index + 1
         page_date = row[:post_date]
         page_title = row[:post_title].to_s
         page_content = row[:post_content].to_s
