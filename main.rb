@@ -4,7 +4,7 @@ require "sequel"
 puts "Starting Import"
 DB_WP = Sequel.connect('mysql://user:pass@localhost/wp_database_name')
 DB_ENKI = Sequel.connect('mysql://user:pass@localhost/enki_database_name')
-WP_PREFIX = "wp_123abc"
+WP_PREFIX = "wp_123abc" #ususally only 'wp_', some installations change this to make sql injection more difficult
 
 
 #preparing post import
@@ -81,7 +81,7 @@ DB_WP.fetch("SELECT name, id FROM #{WP_PREFIX}_terms t, #{WP_PREFIX}_posts p, #{
 		#updating count
 		DB_ENKI[:tags].filter(:name => tag_row[:name]).update(:taggings_count => new_count)
 		
-		DB_ENKI[:taggings].insert(:tag_id => my_tag_id, :taggable_id => index)
+		DB_ENKI[:taggings].insert(:tag_id => my_tag_id, :taggable_id => index + 1)
         print " (#{new_count}) | "
 end
 print "\n"
